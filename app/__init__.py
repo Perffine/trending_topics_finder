@@ -1,0 +1,1 @@
+"""Promo Radar application package."""

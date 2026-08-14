@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Top 10 / Promo Radar{% endblock %}
+{% block content %}
+  <section class="desk-header">
+    <div>
+      <p class="eyebrow">Current desk</p>
+      <h1>What is moving now?</h1>
+      <p class="lede">A ranked view of unusual upward attention across GTA and Canadian news feeds. Scores below are deterministic, inspectable signals; editorial and program matching arrive in later phases.</p>
+    </div>
+    <form method="post" action="/refresh">
+      <button class="refresh" type="submit">Run fresh scan</button>
+      <small>
+        Last updated:
+        {% if data.last_updated %}{{ data.last_updated.strftime('%b %d, %I:%M %p %Z') }}{% else %}not yet run{% endif %}
+      </small>
+    </form>
+  </section>
+
+  {% if notice %}<p class="notice" role="status">{{ notice }}</p>{% endif %}
+
+  <section class="summary-strip" aria-label="Scan summary">
+    <div><strong>{{ data.items_24h }}</strong><span>items / 24h</span></div>
+    <div><strong>{{ data.active_clusters }}</strong><span>active topics</span></div>
+    <div><strong>{{ data.emerging_hot_clusters }}</strong><span>emerging + hot</span></div>
+    <div><strong>{{ data.programs_indexed }}</strong><span>programs / later phase</span></div>
+    <div><strong>{{ data.next_refresh.strftime('%I:%M %p') }}</strong><span>next scheduled slot</span></div>
+  </section>
+
+  {% if data.opportunities %}
+    <ol class="radar-list">
+      {% for item in data.opportunities %}
+        <li class="radar-item">
+          <div class="rank" aria-label="Rank {{ item.rank }}">{{ '%02d'|format(item.rank) }}</div>
+          <article>
+            <div class="topic-heading">
+              <div>
+                <p class="state state-{{ item.cluster.state }}">{{ item.cluster.state }}</p>
+                <h2>{{ item.cluster.canonical_title }}</h2>
+              </div>
+              <div class="overall-score">
+                <strong>{{ item.snapshot.trend_score|round|int }}</strong>
+                <span>signal</span>
+              </div>
+            </div>
+
+            <div class="score-row" aria-label="Signal scores">
+              <span>Velocity <b>{{ item.snapshot.velocity|round|int }}</b></span>
+              <span>Acceleration <b>{{ item.snapshot.acceleration|round|int }}</b></span>
+              <span>Diversity <b>{{ item.snapshot.source_diversity|round|int }}</b></span>
+              <span>Confidence <b>{{ item.confidence }}</b></span>
+            </div>
+
+            <p class="why-now"><b>Why now:</b> {{ item.why_now }}</p>
+            <p class="signal-line">
+              {% if item.snapshot.growth_percent_6h is not none %}
+                {{ '%+.0f'|format(item.snapshot.growth_percent_6h) }}% / 6h
+              {% else %}
+                New in the current 6h window
+              {% endif %}
+              <span>/</span> {{ item.snapshot.unique_sources_24h }} independent source(s) / 24h
+              <span>/</span> {{ item.snapshot.mentions_24h }} non-syndicated item(s)
+            </p>
+
+            {% if item.sources %}
+              <div class="sources">
+                <b>Representative coverage</b>
+                {% for source in item.sources %}
+                  <a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.source_name }}: {{ source.title }}</a>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <details>
+              <summary>Inspect score components</summary>
+              <dl class="components">
+                <div><dt>Velocity</dt><dd>{{ item.snapshot.velocity|round(1) }}</dd></div>
+                <div><dt>Acceleration</dt><dd>{{ item.snapshot.acceleration|round(1) }}</dd></div>
+                <div><dt>Source diversity</dt><dd>{{ item.snapshot.source_diversity|round(1) }}</dd></div>
+                <div><dt>External interest</dt><dd>{{ item.snapshot.external_interest|round(1) }}</dd></div>
+                <div><dt>Novelty</dt><dd>{{ item.snapshot.novelty|round(1) }}</dd></div>
+                <div><dt>Freshness</dt><dd>{{ item.snapshot.freshness|round(1) }}</dd></div>
+                <div><dt>Saturation penalty</dt><dd>-{{ item.snapshot.saturation_penalty|round(1) }}</dd></div>
+              </dl>
+            </details>
+          </article>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <section class="empty-state">
+      <p class="eyebrow">No qualified signals yet</p>
+      <h2>The desk is quiet.</h2>
+      <p>Run a fresh scan to ingest live headlines. A topic appears here after at least {{ request.app.state.settings.min_topic_evidence }} independent items cluster around it.</p>
+    </section>
+  {% endif %}
+{% endblock %}
+

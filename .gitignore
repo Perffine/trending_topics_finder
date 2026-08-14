@@ -1,0 +1,86 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Virtual environments
+/.venv/
+/venv/
+/env/
+/ENV/
+
+# Python bytecode and interpreter caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Packaging and build output
+/build/
+/dist/
+/develop-eggs/
+/eggs/
+/.eggs/
+/sdist/
+/wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Tests, coverage, linters, and type checkers
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+pytestdebug.log
+
+# Local databases and runtime output
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.log
+/logs/
+
+# IDE and editor metadata
+.idea/
+.vscode/
+.vs/
+*.code-workspace
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.swp
+*.swo
+*~
+
+# Operating-system files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary files
+.cache/
+/tmp/
+/temp/
+*.tmp
+*.bak
+
+# Keep source-controlled database migrations.
+!migrations/
+!migrations/**
